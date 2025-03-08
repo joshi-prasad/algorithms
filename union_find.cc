@@ -9,10 +9,12 @@ UF::UF(
   total_nodes_(total_nodes),
   root_(total_nodes),
   size_(total_nodes, 1),
+  largest_node_(total_nodes),
   total_connections_(1) {
 
   for (int64_t i = 0; i < total_nodes; ++i) {
     root_[i] = i;
+    largest_node_[i] = i;
   }
 }
 
@@ -38,7 +40,7 @@ int UF::MaxHeight() const {
   return max_height;
 }
 
-int64_t UF::FindRoot(int64_t node) {
+int64_t UF::FindRoot(int64_t node) const {
   if (!IsValidNode(node)) {
     return -1;
   }
@@ -79,18 +81,28 @@ void UF::Union(int64_t p, int64_t q) {
   // Establish a new connection
   const int64_t pr_sz = size_[pr];
   const int64_t qr_sz = size_[qr];
+  const int64_t largest_node = std::max(largest_node_[pr], largest_node_[qr]);
 
   if (pr_sz <= qr_sz) {
     // P's root has less nodes. Move it under Q's root
     root_[pr] = qr;
     size_[qr] += pr_sz;
+    largest_node_[qr] = largest_node;
   } else if (pr_sz > qr_sz) {
     // Move Q's Root under P's root
     root_[qr] = pr;
     size_[pr] += qr_sz;
+    largest_node_[pr] = largest_node;
   }
   // account a new connection
   ++total_connections_;
   assert(total_connections_ <= total_nodes_);
 }
 
+int64_t UF::FindLargestNodeInComponent(int64_t node) const {
+  int64_t root = FindRoot(node);
+  if (root < 0) {
+    return -1;
+  }
+  return largest_node_[root];
+}

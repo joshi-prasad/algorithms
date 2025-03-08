@@ -10,13 +10,15 @@ public:
   bool IsConnected(int64_t p, int64_t q);
   int MaxHeight() const;
   bool IsAllNodesConnected() const;
+  int64_t FindRoot(int64_t node) const;
+  int64_t FindLargestNodeInComponent(int64_t node) const;
 private:
-  int64_t FindRoot(int64_t node);
   bool IsValidNode(int64_t node) const;
 private:
   int64_t total_nodes_;
-  std::vector<int64_t> root_;
-  std::vector<int64_t> size_;
+  mutable std::vector<int64_t> root_;
+  mutable std::vector<int64_t> size_;
+  std::vector<int64_t> largest_node_;
   int64_t total_connections_;
 };
 
